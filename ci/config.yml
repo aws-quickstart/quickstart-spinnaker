@@ -1,5 +1,5 @@
 global:
-  owner: quickstart-eng@amazon.com
+  owner: huynhz@amazon.com
   marketplace-ami: false
   reporting: true
   regions:
@@ -16,6 +16,9 @@ global:
   cis3bucket:  s3://quickstart-ci-bucket
  
 tests:
+  quickstart-spinnakert:
+    template_file: spinnakercf.template
+    parameter_input: spinnakercf-exampleparms.json
   quickstart-spinnakert1:
     template_file: quickstart-spinnaker-example1.template
     parameter_input: quickstart-spinnaker-exampleparms1.json
