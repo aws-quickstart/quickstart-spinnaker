@@ -17,11 +17,5 @@ global:
  
 tests:
   quickstart-spinnakert:
-    template_file: spinnakercf.template
-    parameter_input: spinnakercf-exampleparms.json
-  quickstart-spinnakert1:
-    template_file: quickstart-spinnaker-example1.template
-    parameter_input: quickstart-spinnaker-exampleparms1.json
-  quickstart-spinnakert2:
-    template_file: quickstart-spinnaker-example2.template
-    parameter_input: quickstart-spinnaker-exampleparms2.json
+    template_file: quickstart-spinnakercf.template
+    parameter_input: quickstart-spinnakercf.json

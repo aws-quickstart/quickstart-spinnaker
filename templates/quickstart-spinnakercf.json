@@ -1,0 +1,10 @@
+[
+  {
+    "ParameterKey": "KeyName",
+    "ParameterValue": "cikey"
+  }, 
+  {
+    "ParameterKey": "Password",
+    "ParameterValue": "SpinT3st-00"
+  }
+]
