@@ -1,21 +1,13 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Parameters": {
-    "SpinnakerVPCCIDR": {
-      "Description": "CIDR Block for Developer VPC",
-      "Type": "String",
-      "Default": "10.100.0.0/16",
-      "AllowedValues": [
-        "10.100.0.0/16"
-      ]
+    "SpinnakerVPC": {
+      "Description": "VPC With a Public Subnet",
+      "Type": "AWS::EC2::VPC::Id"
     },
-    "SpinnakerPublicSubnetCIDR": {
-      "Description": "SpinnakerEnv Public Subnet",
-      "Type": "String",
-      "Default": "10.100.10.0/24",
-      "AllowedValues": [
-        "10.100.10.0/24"
-      ]
+    "SpinnakerPublicSubnet": {
+      "Description": "Public Subnet for Spinnaker",
+      "Type": "AWS::EC2::Subnet::Id"
     },
     "KeyName": {
       "Description": "Key Pair Name",
@@ -160,144 +152,10 @@
         ]
       }
     },
-    "SpinnakerVPC": {
-      "Type": "AWS::EC2::VPC",
-      "Properties": {
-        "CidrBlock": {
-          "Ref": "SpinnakerVPCCIDR"
-        },
-        "EnableDnsSupport": "true",
-        "EnableDnsHostnames": "true",
-        "Tags": [
-          {
-            "Key": "VPC",
-            "Value": "Spinnaker VPC"
-          },
-          {
-            "Key": "Name",
-            "Value": "defaultvpc"
-          }
-        ]
-      }
-    },
-    "SpinnakerInternetGateway": {
-      "Type": "AWS::EC2::InternetGateway",
-      "DependsOn": "SpinnakerVPC"
-    },
-    "SpinnakerAttachGateway": {
-      "Type": "AWS::EC2::VPCGatewayAttachment",
-      "DependsOn": [
-        "SpinnakerVPC",
-        "SpinnakerInternetGateway"
-      ],
-      "Properties": {
-        "VpcId": {
-          "Ref": "SpinnakerVPC"
-        },
-        "InternetGatewayId": {
-          "Ref": "SpinnakerInternetGateway"
-        }
-      }
-    },
-    "SpinnakerPublicSubnet": {
-      "Type": "AWS::EC2::Subnet",
-      "DependsOn": "SpinnakerAttachGateway",
-      "Properties": {
-        "VpcId": {
-          "Ref": "SpinnakerVPC"
-        },
-        "CidrBlock": {
-          "Ref": "SpinnakerPublicSubnetCIDR"
-        },
-        "AvailabilityZone": {
-          "Fn::Select": [
-            "0",
-            {
-              "Fn::GetAZs": ""
-            }
-          ]
-        },
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": {
-              "Fn::Join": [
-                ".",
-                [
-                  {
-                    "Ref": "SpinnakerVPC"
-                  },
-                  "internal",
-                  {
-                    "Fn::Select": [
-                      "0",
-                      {
-                        "Fn::GetAZs": ""
-                      }
-                    ]
-                  }
-                ]
-              ]
-            }
-          }
-        ]
-      }
-    },
-    "SpinnakerPublicRouteTable": {
-      "Type": "AWS::EC2::RouteTable",
-      "DependsOn": [
-        "SpinnakerVPC",
-        "SpinnakerAttachGateway"
-      ],
-      "Properties": {
-        "VpcId": {
-          "Ref": "SpinnakerVPC"
-        },
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "Spinnaker Public Route Table"
-          }
-        ]
-      }
-    },
-    "SpinnakerPublicRoute": {
-      "Type": "AWS::EC2::Route",
-      "DependsOn": [
-        "SpinnakerPublicRouteTable",
-        "SpinnakerAttachGateway"
-      ],
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "SpinnakerPublicRouteTable"
-        },
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "GatewayId": {
-          "Ref": "SpinnakerInternetGateway"
-        }
-      }
-    },
-    "SpinnakerPublicSubnetRouteTableAssociation": {
-      "Type": "AWS::EC2::SubnetRouteTableAssociation",
-      "DependsOn": [
-        "SpinnakerPublicRouteTable",
-        "SpinnakerPublicSubnet",
-        "SpinnakerAttachGateway"
-      ],
-      "Properties": {
-        "SubnetId": {
-          "Ref": "SpinnakerPublicSubnet"
-        },
-        "RouteTableId": {
-          "Ref": "SpinnakerPublicRouteTable"
-        }
-      }
-    },
     "SpinnakerWebServerSecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
-      "DependsOn": "SpinnakerAttachGateway",
       "Properties": {
-        "GroupDescription": "Security Group for Spinnaker Web server",
+        "GroupDescription": "Public Security Group for Spinnaker Web server",
         "VpcId": {
           "Ref": "SpinnakerVPC"
         },
@@ -325,9 +183,7 @@
       "Type": "AWS::EC2::Instance",
       "DependsOn": [
         "SpinnakerInstanceProfile",
-        "SpinnakerPublicSubnet",
-        "SpinnakerWebServerSecurityGroup",
-        "SpinnakerAttachGateway"
+        "SpinnakerWebServerSecurityGroup"
       ],
       "Properties": {
         "KeyName": {
@@ -409,6 +265,15 @@
         "Fn::GetAtt": [
           "SpinnakerWebServer",
           "PublicDnsName"
+        ]
+      },
+      "Description": "Spinnaker public hostname"
+    },
+    "SpinnakerPublicIP": {
+      "Value": {
+        "Fn::GetAtt": [
+          "SpinnakerWebServer",
+          "PublicIp"
         ]
       },
       "Description": "Spinnaker public hostname"
