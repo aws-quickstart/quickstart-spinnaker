@@ -27,3 +27,8 @@ tests:
     parameter_input: quickstart-spinnakercf-us-west-1.json
     regions:
     - us-west-1
+  spin-us-west-2:
+    template_file: quickstart-spinnakercf.template
+    parameter_input: quickstart-spinnakercf-us-west-2.json
+    regions:
+    - us-west-2
