@@ -24,8 +24,8 @@ Instructions to run Spinnaker using this Cloudformation:
 2. Create an EC2 Key Pair for connecting to your instances.
   1. Goto Console > EC2 > Key Pairs.
   2. Click Create Key Pair.
-  3. Name the key pair my-aws-account-keypair
-  4. AWS will download file my-aws-account-keypair.pem to your computer. chmod 400 the file.
+  3. Name the key pair default-keypair
+  4. AWS will download file default-keypair.pem to your computer. chmod 400 the file.
   
 3. Copy the [config file](config) file and place it in this folder ~/.ssh/ and replace <> with your instance info ---See sample in the repository
    
