@@ -25,31 +25,31 @@
   "Mappings": {
     "SpinnakerAMIId": {
       "us-east-1": {
-        "AMI": "ami-7449af19"
+        "AMI": "ami-ad8e61c0"
       },
       "us-west-1": {
-        "AMI": "ami-57cab437"
+        "AMI": "ami-2ae79e4a"
       },
       "us-west-2": {
-        "AMI": "ami-b209fad2"
+        "AMI": "ami-80718ce0"
       },
       "eu-west-1": {
-        "AMI": "ami-39ca424a"
+        "AMI": "ami-e82ea49b"
       },
       "eu-central-1": {
-        "AMI": "ami-d32fcdbc"
+        "AMI": "ami-2603ee49"
       },
       "sa-east-1": {
-        "AMI": "ami-c0ab22ac"
+        "AMI": "ami-46f9712a"
       },
       "ap-southeast-1": {
-        "AMI": "ami-ace136cf"
+        "AMI": "ami-b3de08d0"
       },
       "ap-southeast-2": {
-        "AMI": "ami-0a4f6369"
+        "AMI": "ami-6a80ac09"
       },
       "ap-northeast-1": {
-        "AMI": "ami-ef445e81"
+        "AMI": "ami-6d24c30c"
       }
     }
   },
