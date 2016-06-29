@@ -54,6 +54,28 @@
     }
   },
   "Resources": {
+    "BaseIAMRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "ec2.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Path": "/"
+      }
+    },
     "SpinnakerUser": {
       "Description": "User identity Spinnaker uses to create AWS resources",
       "Type": "AWS::IAM::User",
@@ -79,7 +101,12 @@
                   "Action": [
                     "iam:PassRole"
                   ],
-                  "Resource": "arn:aws:iam::730329488449:role/BaseIAMRole"
+                  "Resource": {
+                    "Fn::GetAtt": [
+                      "BaseIAMRole",
+                      "Arn"
+                    ]
+                  }
                 }
               ]
             }
@@ -132,7 +159,12 @@
                   "Action": [
                     "iam:PassRole"
                   ],
-                  "Resource": "arn:aws:iam::730329488449:role/BaseIAMRole"
+                  "Resource": {
+                    "Fn::GetAtt": [
+                      "BaseIAMRole",
+                      "Arn"
+                    ]
+                  }
                 }
               ]
             }
@@ -227,8 +259,17 @@
                 "/opt/spinnaker/bin/stop_spinnaker.sh\n",
                 "/var/lib/dpkg/info/ca-certificates-java.postinst configure\n",
                 "sed -i 's/name: .*/name: default/g' /opt/spinnaker/config/spinnaker-local.yml\n",
+                "sed -i 's/defaultIAMRole: .*/defaultIAMRole: ",
+                {
+                  "Ref": "BaseIAMRole"
+                },
+                "/g' /opt/spinnaker/config/spinnaker-local.yml\n",
                 "sed -i 's/SPINNAKER_AWS_ENABLED=false/SPINNAKER_AWS_ENABLED=true/g' /etc/default/spinnaker\n",
-                "sed -i 's/SPINNAKER_AWS_DEFAULT_REGION=.*/SPINNAKER_AWS_DEFAULT_REGION=us-west-2/g' /etc/default/spinnaker\n",
+                "sed -i 's/SPINNAKER_AWS_DEFAULT_REGION=.*/SPINNAKER_AWS_DEFAULT_REGION=",
+                {
+                  "Ref": "AWS::Region"
+                },
+                "/g' /etc/default/spinnaker\n",
                 "mkdir /home/spinnaker/.aws/\n",
                 "printf \"[default]\\n",
                 "aws_access_key_id= ",
