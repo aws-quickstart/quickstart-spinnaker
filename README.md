@@ -21,7 +21,7 @@ Instructions to run Spinnaker using this Cloudformation:
   4. AWS will download file my-aws-account-keypair.pem to your computer. chmod 400 the file.
   
 2. Run SSH and port forwarding Spinnaker web application and API to localhost
-    ssh -L 9000:localhost:9000 -L 8084:localhost:8084 -L 8087:localhost:8087 ubuntu@ec2-198-51-100-1.compute-1.amazonaws.com
+	ssh -L 9000:localhost:9000 -L 8084:localhost:8084 -L 8087:localhost:8087 ubuntu@ec2-198-51-100-1.compute-1.amazonaws.com
 
 3. Point your browser to http://localhost:9000 to start using Spinnaker
     
