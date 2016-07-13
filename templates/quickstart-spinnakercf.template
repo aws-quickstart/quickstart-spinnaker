@@ -1,0 +1,323 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "SpinnakerVPC": {
+      "Description": "VPC With a Public Subnet",
+      "Type": "AWS::EC2::VPC::Id"
+    },
+    "SpinnakerPublicSubnet": {
+      "Description": "Public Subnet for Spinnaker",
+      "Type": "AWS::EC2::Subnet::Id"
+    },
+    "KeyName": {
+      "Description": "Key Pair Name",
+      "Type": "AWS::EC2::KeyPair::KeyName"
+    },
+    "Password": {
+      "NoEcho": "true",
+      "Type": "String",
+      "Description": "Password for Spinnaker User account",
+      "MinLength": "1",
+      "MaxLength": "41",
+      "ConstraintDescription": "the password must be between 1 and 41 characters"
+    }
+  },
+  "Mappings": {
+    "SpinnakerAMIId": {
+      "us-east-1": {
+        "AMI": "ami-ad8e61c0"
+      },
+      "us-west-1": {
+        "AMI": "ami-2ae79e4a"
+      },
+      "us-west-2": {
+        "AMI": "ami-80718ce0"
+      },
+      "eu-west-1": {
+        "AMI": "ami-e82ea49b"
+      },
+      "eu-central-1": {
+        "AMI": "ami-2603ee49"
+      },
+      "sa-east-1": {
+        "AMI": "ami-46f9712a"
+      },
+      "ap-southeast-1": {
+        "AMI": "ami-b3de08d0"
+      },
+      "ap-southeast-2": {
+        "AMI": "ami-6a80ac09"
+      },
+      "ap-northeast-1": {
+        "AMI": "ami-6d24c30c"
+      }
+    }
+  },
+  "Resources": {
+    "BaseIAMRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "ec2.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Path": "/"
+      }
+    },
+    "SpinnakerUser": {
+      "Description": "User identity Spinnaker uses to create AWS resources",
+      "Type": "AWS::IAM::User",
+      "Properties": {
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/PowerUserAccess"
+        ],
+        "Path": "/",
+        "LoginProfile": {
+          "Password": {
+            "Ref": "Password"
+          }
+        },
+        "Policies": [
+          {
+            "PolicyName": "Spinnakerpassrole",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Sid": "Stmt1449267121000",
+                  "Effect": "Allow",
+                  "Action": [
+                    "iam:PassRole"
+                  ],
+                  "Resource": {
+                    "Fn::GetAtt": [
+                      "BaseIAMRole",
+                      "Arn"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "SpinnakerAccessKey": {
+      "Description": "Generate AccessKey for Spinnaker",
+      "Type": "AWS::IAM::AccessKey",
+      "Properties": {
+        "UserName": {
+          "Ref": "SpinnakerUser"
+        }
+      },
+      "DependsOn": "SpinnakerUser"
+    },
+    "SpinnakerRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "ec2.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/PowerUserAccess"
+        ],
+        "Path": "/",
+        "Policies": [
+          {
+            "PolicyName": "Spinnakerpassrole",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Sid": "Stmt1449267121000",
+                  "Effect": "Allow",
+                  "Action": [
+                    "iam:PassRole"
+                  ],
+                  "Resource": {
+                    "Fn::GetAtt": [
+                      "BaseIAMRole",
+                      "Arn"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "SpinnakerInstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "DependsOn": "SpinnakerRole",
+      "Properties": {
+        "Path": "/",
+        "Roles": [
+          {
+            "Ref": "SpinnakerRole"
+          }
+        ]
+      }
+    },
+    "SpinnakerWebServerSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Public Security Group for Spinnaker Web server",
+        "VpcId": {
+          "Ref": "SpinnakerVPC"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "SpinnakerWebServerSecurityGroup"
+          },
+          {
+            "Key": "InstanceType",
+            "Value": "General"
+          }
+        ],
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "22",
+            "ToPort": "22",
+            "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      }
+    },
+    "SpinnakerWebServer": {
+      "Type": "AWS::EC2::Instance",
+      "DependsOn": [
+        "SpinnakerInstanceProfile",
+        "SpinnakerWebServerSecurityGroup"
+      ],
+      "Properties": {
+        "KeyName": {
+          "Ref": "KeyName"
+        },
+        "IamInstanceProfile": {
+          "Ref": "SpinnakerInstanceProfile"
+        },
+        "ImageId": {
+          "Fn::FindInMap": [
+            "SpinnakerAMIId",
+            {
+              "Ref": "AWS::Region"
+            },
+            "AMI"
+          ]
+        },
+        "InstanceType": "m4.xlarge",
+        "EbsOptimized": true,
+        "NetworkInterfaces": [
+          {
+            "DeviceIndex": "0",
+            "AssociatePublicIpAddress": "true",
+            "SubnetId": {
+              "Ref": "SpinnakerPublicSubnet"
+            },
+            "GroupSet": [
+              {
+                "Ref": "SpinnakerWebServerSecurityGroup"
+              }
+            ]
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash",
+                "\n",
+                "/opt/spinnaker/bin/stop_spinnaker.sh\n",
+                "/var/lib/dpkg/info/ca-certificates-java.postinst configure\n",
+                "sed -i 's/name: .*/name: default/g' /opt/spinnaker/config/spinnaker-local.yml\n",
+                "sed -i 's/defaultIAMRole: .*/defaultIAMRole: ",
+                {
+                  "Ref": "BaseIAMRole"
+                },
+                "/g' /opt/spinnaker/config/spinnaker-local.yml\n",
+                "sed -i 's/SPINNAKER_AWS_ENABLED=false/SPINNAKER_AWS_ENABLED=true/g' /etc/default/spinnaker\n",
+                "sed -i 's/SPINNAKER_AWS_DEFAULT_REGION=.*/SPINNAKER_AWS_DEFAULT_REGION=",
+                {
+                  "Ref": "AWS::Region"
+                },
+                "/g' /etc/default/spinnaker\n",
+                "mkdir /home/spinnaker/.aws/\n",
+                "printf \"[default]\\n",
+                "aws_access_key_id= ",
+                {
+                  "Ref": "SpinnakerAccessKey"
+                },
+                "\\n",
+                "aws_secret_access_key= ",
+                {
+                  "Fn::GetAtt": [
+                    "SpinnakerAccessKey",
+                    "SecretAccessKey"
+                  ]
+                },
+                "\" > /home/spinnaker/.aws/credentials\n",
+                "/opt/spinnaker/scripts/reconfigure_spinnaker.sh\n",
+                "/opt/spinnaker/bin/start_spinnaker.sh\n"
+              ]
+            ]
+          }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "SpinnakerWebServer"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "SpinnakerPublicHostName": {
+      "Value": {
+        "Fn::GetAtt": [
+          "SpinnakerWebServer",
+          "PublicDnsName"
+        ]
+      },
+      "Description": "Spinnaker public hostname"
+    },
+    "SpinnakerPublicIP": {
+      "Value": {
+        "Fn::GetAtt": [
+          "SpinnakerWebServer",
+          "PublicIp"
+        ]
+      },
+      "Description": "Spinnaker public hostname"
+    }
+  }
+}
