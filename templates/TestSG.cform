@@ -1,0 +1,138 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "KeyName": {
+      "Description": "Key Pair Name",
+      "Type": "AWS::EC2::KeyPair::KeyName"
+    },
+    "SpinnakerVPC": {
+      "Description": "VPC With a Public Subnet",
+      "Type": "AWS::EC2::VPC::Id"
+    },
+    "SpinnakerPrivateSubnet": {
+      "Description": "Private Subnet for Spinnaker. Ensure you select the same public and private subnet inside the selected VPC.",
+      "Type": "AWS::EC2::Subnet::Id"
+    },
+    "SpinnakerPublicSubnet": {
+      "Description": "Public Subnet for Spinnaker. Ensure you select the same public and private subnet inside the selected VPC.",
+      "Type": "AWS::EC2::Subnet::Id"
+    },
+    "SSHLocation": {
+      "Description": "The IP address range that can be used to SSH to the Bastion host.",
+      "Type": "String",
+      "MinLength": "9",
+      "MaxLength": "18",
+      "Default": "0.0.0.0/0",
+      "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+      "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x."
+    }
+  },
+  "Resources": {
+    "SpinnakerBastionSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Enable SSH access via port 22",
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": {
+              "Ref": "SSHLocation"
+            },
+            "FromPort": "22",
+            "IpProtocol": "tcp",
+            "ToPort": "22"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "SpinnakerBastionSecurityGroup"
+          }
+        ],
+        "VpcId": {
+          "Ref": "SpinnakerVPC"
+        }
+      }
+    },
+    "SpinnakerWebServerSecurityGroup": {
+      "DependsOn": "SpinnakerBastionSecurityGroup",
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Public Security Group for Spinnaker Web server",
+        "SecurityGroupIngress": [
+          {
+            "SourceSecurityGroupId": {
+              "Ref": "SpinnakerBastionSecurityGroup"
+            },
+            "FromPort": "9000",
+            "IpProtocol": "tcp",
+            "ToPort": "9000"
+          },
+          {
+            "SourceSecurityGroupId": {
+              "Ref": "SpinnakerBastionSecurityGroup"
+            },
+            "FromPort": "8084",
+            "IpProtocol": "tcp",
+            "ToPort": "8084"
+          },
+          {
+            "SourceSecurityGroupId": {
+              "Ref": "SpinnakerBastionSecurityGroup"
+            },
+            "FromPort": "8087",
+            "IpProtocol": "tcp",
+            "ToPort": "8087"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "SpinnakerWebServerSecurityGroup"
+          }
+        ],
+        "VpcId": {
+          "Ref": "SpinnakerVPC"
+        }
+      }
+    }
+  }
+}
+
+
+
+
+"SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "9000",
+            "ToPort": "9000",
+            "SourceSecurityGroupId": {
+              "Fn::GetAtt": [
+                "BastionServerSecurityGroup",
+                "GroupId"
+              ]
+            }
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "8084",
+            "ToPort": "8084",
+            "SourceSecurityGroupId": {
+              "Fn::GetAtt": [
+                "BastionServerSecurityGroup",
+                "GroupId"
+              ]
+            }
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "8087",
+            "ToPort": "8087",
+            "SourceSecurityGroupId": {
+              "Fn::GetAtt": [
+                "BastionServerSecurityGroup",
+                "GroupId"
+              ]
+            }
+          }
+        ],
