@@ -100,31 +100,31 @@
     },
     "SpinnakerAMIId": {
       "ap-northeast-1": {
-        "AMI": "ami-6d24c30c"
+        "AMI": "ami-b2ad57d3"
       },
       "ap-southeast-1": {
-        "AMI": "ami-b3de08d0"
+        "AMI": "ami-69d30c0a"
       },
       "ap-southeast-2": {
-        "AMI": "ami-6a80ac09"
+        "AMI": "ami-7a516419"
       },
       "eu-central-1": {
-        "AMI": "ami-2603ee49"
+        "AMI": "ami-b12edade"
       },
       "eu-west-1": {
-        "AMI": "ami-e82ea49b"
+        "AMI": "ami-546f0227"
       },
       "sa-east-1": {
-        "AMI": "ami-46f9712a"
+        "AMI": "ami-f3e1769f"
       },
       "us-east-1": {
-        "AMI": "ami-ad8e61c0"
+        "AMI": "ami-4153d956"
       },
       "us-west-1": {
-        "AMI": "ami-2ae79e4a"
+        "AMI": "ami-87dc9de7"
       },
       "us-west-2": {
-        "AMI": "ami-80718ce0"
+        "AMI": "ami-21a26d41"
       }
     }
   },
@@ -274,7 +274,7 @@
           },
           {
             "Key": "Name",
-            "Value": "defaultvpc"
+            "Value": "SpinnakerVPC"
           }
         ]
       }
@@ -507,7 +507,7 @@
       "DependsOn": "SpinnakerBastionSecurityGroup",
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "Public Security Group for Spinnaker Web server",
+        "GroupDescription": "Security Group for Spinnaker Web server",
         "SecurityGroupIngress": [
           {
             "SourceSecurityGroupId": {
@@ -530,36 +530,60 @@
       }
     },
     "SpinnakerRedisCluster": {
+      "DependsOn": [
+        "SpinnakerRedisClusterSecurityGroup",
+        "SpinnakerCacheSubnetGroup"
+      ],
       "Type": "AWS::ElastiCache::CacheCluster",
       "Properties": {
+        "ClusterName": "SpinnakerElasticache",
         "CacheNodeType": "cache.t2.micro",
-        "CacheSecurityGroupNames": [
+        "VpcSecurityGroupIds": [
           {
             "Ref": "SpinnakerRedisClusterSecurityGroup"
           }
         ],
+        "CacheSubnetGroupName": {
+          "Ref": "SpinnakerCacheSubnetGroup"
+        },
         "Engine": "redis",
         "NumCacheNodes": "1"
       }
     },
-    "SpinnakerRedisClusterSecurityGroup": {
-      "Type": "AWS::ElastiCache::SecurityGroup",
+    "SpinnakerCacheSubnetGroup": {
+      "Type": "AWS::ElastiCache::SubnetGroup",
       "Properties": {
-        "Description": "Lock the cluster down"
+        "Description": "Cache Subnet Group",
+        "SubnetIds": [
+          {
+            "Ref": "SpinnakerPrivateSubnet"
+          }
+        ]
       }
     },
-    "SpinnakerRedisClusterSecurityGroupIngress": {
-      "DependsOn":[
-        "SpinnakerRedisClusterSecurityGroup",
-        "SpinnakerWebServerSecurityGroup"
-      ],
-      "Type": "AWS::ElastiCache::SecurityGroupIngress",
+    "SpinnakerRedisClusterSecurityGroup": {
+      "DependsOn": "SpinnakerBastionSecurityGroup",
+      "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "CacheSecurityGroupName": {
-          "Ref": "SpinnakerRedisClusterSecurityGroup"
-        },
-        "EC2SecurityGroupId": {
-          "Ref": "SpinnakerWebServerSecurityGroup"
+        "GroupDescription": "Private Security Group for redis",
+        "SecurityGroupIngress": [
+          {
+            "SourceSecurityGroupId": {
+              "Ref": "SpinnakerWebServerSecurityGroup"
+            },
+            "FromPort": "0",
+            "IpProtocol": "tcp",
+            "ToPort": "64000"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "SpinnakerRedisClusterSecurityGroup"
+          }
+        ],
+        "VpcId": {
+          "Ref": "SpinnakerVPC"
         }
       }
     },
@@ -635,7 +659,7 @@
             "AMI"
           ]
         },
-        "InstanceType": "t2.micro",
+        "InstanceType": "m4.large",
         "KeyName": {
           "Ref": "KeyName"
         },
@@ -667,15 +691,26 @@
                 "#!/bin/bash",
                 "\n",
                 "/opt/spinnaker/bin/stop_spinnaker.sh\n",
-                "apt-get update -y",
-                "apt-get dist-upgrade -y spinnaker\n",
+                "apt-get update -y\n",
+                "apt-get dist-upgrade -y --force-yes spinnaker\n",
                 "/var/lib/dpkg/info/ca-certificates-java.postinst configure\n",
                 "sed -i 's/name: .*/name: default/g' /opt/spinnaker/config/spinnaker-local.yml\n",
+                "sed -i '/redis:$/{ N;N;N;N;s/host: localhost/host: ",
+                {
+                  "Fn::GetAtt": [
+                    "SpinnakerRedisCluster",
+                    "RedisEndpoint.Address"
+                  ]
+                },
+                "/ }' /opt/spinnaker/config/spinnaker-local.yml\n",
                 "sed -i 's/defaultIAMRole: .*/defaultIAMRole: ",
                 {
                   "Ref": "BaseIAMRole"
                 },
                 "/g' /opt/spinnaker/config/spinnaker-local.yml\n",
+                "sed -i '/cassandra:$/ { N;s/enabled: true/enabled: false/ }' /opt/spinnaker/config/spinnaker-local.yml\n",
+                "sed -i '/redis:$/ { N;s/enabled: false/enabled: true/ }' /opt/spinnaker/config/spinnaker-local.yml\n",
+                "sed -i '/inMemory:$/ { N;s/enabled: false/enabled: true/ }' /opt/spinnaker/config/spinnaker-local.yml\n",
                 "sed -i 's/SPINNAKER_AWS_ENABLED=false/SPINNAKER_AWS_ENABLED=true/g' /etc/default/spinnaker\n",
                 "sed -i 's/SPINNAKER_AWS_DEFAULT_REGION=.*/SPINNAKER_AWS_DEFAULT_REGION=",
                 {
@@ -726,23 +761,6 @@
         ]
       }
     },
-    "SSHString1": {
-      "Description": "SSH String",
-      "Value": {
-        "Fn::Join": [
-          "",
-          [
-            "ssh -A -L 9000:localhost:9000 -L 8084:localhost:8084 -L 8087:localhost:8087 ec2-user@",
-            {
-              "Fn::GetAtt": [
-                "BastionServer",
-                "PublicIp"
-              ]
-            }
-          ]
-        ]
-      }
-    },
     "SSHString2": {
       "Description": "SSH String",
       "Value": {
@@ -754,6 +772,23 @@
               "Fn::GetAtt": [
                 "SpinnakerWebServer",
                 "PrivateIp"
+              ]
+            }
+          ]
+        ]
+      }
+    },
+    "SSHString1": {
+      "Description": "SSH String",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "ssh -A -L 9000:localhost:9000 -L 8084:localhost:8084 -L 8087:localhost:8087 ec2-user@",
+            {
+              "Fn::GetAtt": [
+                "BastionServer",
+                "PublicIp"
               ]
             }
           ]
