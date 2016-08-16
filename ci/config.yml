@@ -19,21 +19,4 @@ global:
 tests:
   spin-us-east-1:
     template_file: quickstart-spinnakercf.template
-    parameter_input: quickstart-spinnakercf-us-east-1.json
-    regions:
-    - us-east-1
-  spin-us-west-1:
-    template_file: quickstart-spinnakercf.template
-    parameter_input: quickstart-spinnakercf-us-west-1.json
-    regions:
-    - us-west-1
-  spin-us-west-2:
-    template_file: quickstart-spinnakercf.template
-    parameter_input: quickstart-spinnakercf-us-west-2.json
-    regions:
-    - us-west-2
-  spin-eu-west-1:
-    template_file: quickstart-spinnakercf.template
-    parameter_input: quickstart-spinnakercf-eu-west-1.json
-    regions:
-    - eu-west-1
+    parameter_input: quickstart-spinnakercf.json
