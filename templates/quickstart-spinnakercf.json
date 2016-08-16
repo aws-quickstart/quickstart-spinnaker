@@ -1,0 +1,26 @@
+[
+    {
+        "ParameterKey": "KeyName",
+        "ParameterValue": "cikey"
+    },
+    {
+        "ParameterKey": "Password",
+        "ParameterValue": "$[alfred_genpass_16]"
+    },
+    {
+        "ParameterKey": "SSHLocation",
+        "ParameterValue": "10.100.0.0/16"
+    },
+    {
+        "ParameterKey": "SpinnakerPrivateSubnetCIDR",
+        "ParameterValue": "10.100.11.0/24"
+    },
+    {
+        "ParameterKey": "SpinnakerPublicSubnetCIDR",
+        "ParameterValue": "10.100.10.0/24"
+    },
+    {
+        "ParameterKey": "SpinnakerVPCCIDR",
+        "ParameterValue": "10.100.0.0/16"
+    }
+]
