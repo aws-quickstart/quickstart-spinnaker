@@ -41,90 +41,74 @@
     }
   },
   "Mappings": {
-    "GenericAMIId": {
+    "AWSAMIRegionMap": {
+      "AMI": {
+        "CENTOS7": "CentOS Linux 7 x86_64 HVM EBS 1602-b7ee8a69-ee97-4a49-9e68-afaee216db2e-ami-d7e1d2bd.3"
+      },
       "ap-northeast-1": {
-        "HVM64": "ami-374db956",
-        "HVMG2": "ami-e0ee1981",
-        "PV64": "ami-3e42b65f"
+        "CENTOS7": "ami-eec1c380"
       },
       "ap-northeast-2": {
-        "HVM64": "ami-2b408b45",
-        "HVMG2": "NOT_SUPPORTED",
-        "PV64": "NOT_SUPPORTED"
+        "CENTOS7": "ami-c74789a9"
+      },
+      "ap-south-1": {
+        "CENTOS7": "ami-95cda6fa"
       },
       "ap-southeast-1": {
-        "HVM64": "ami-a59b49c6",
-        "HVMG2": "ami-0cb5676f",
-        "PV64": "ami-df9e4cbc"
+        "CENTOS7": "ami-f068a193"
       },
       "ap-southeast-2": {
-        "HVM64": "ami-dc361ebf",
-        "HVMG2": "ami-a71c34c4",
-        "PV64": "ami-63351d00"
-      },
-      "cn-north-1": {
-        "HVM64": "ami-8e6aa0e3",
-        "HVMG2": "NOT_SUPPORTED",
-        "PV64": "ami-77559f1a"
+        "CENTOS7": "ami-fedafc9d"
       },
       "eu-central-1": {
-        "HVM64": "ami-ea26ce85",
-        "HVMG2": "ami-7f04ec10",
-        "PV64": "ami-6527cf0a"
+        "CENTOS7": "ami-9bf712f4"
       },
       "eu-west-1": {
-        "HVM64": "ami-f9dd458a",
-        "HVMG2": "ami-b9bd25ca",
-        "PV64": "ami-4cdd453f"
+        "CENTOS7": "ami-7abd0209"
       },
       "sa-east-1": {
-        "HVM64": "ami-6dd04501",
-        "HVMG2": "NOT_SUPPORTED",
-        "PV64": "ami-1ad34676"
+        "CENTOS7": "ami-26b93b4a"
       },
       "us-east-1": {
-        "HVM64": "ami-6869aa05",
-        "HVMG2": "ami-2e5e9c43",
-        "PV64": "ami-2a69aa47"
+        "CENTOS7": "ami-6d1c2007"
       },
       "us-west-1": {
-        "HVM64": "ami-31490d51",
-        "HVMG2": "ami-fd76329d",
-        "PV64": "ami-a2490dc2"
+        "CENTOS7": "ami-af4333cf"
       },
       "us-west-2": {
-        "HVM64": "ami-7172b611",
-        "HVMG2": "ami-83b770e3",
-        "PV64": "ami-7f77b31f"
+        "CENTOS7": "ami-d2c924b2"
       }
     },
     "SpinnakerAMIId": {
+      "AMI": {
+        "UBUNTU14": "Spinnaker-UBUNTU14.04-43"
+      },
       "ap-northeast-1": {
-        "AMI": "ami-b2ad57d3"
+        "UBUNTU14": "ami-b2ad57d3"
       },
       "ap-southeast-1": {
-        "AMI": "ami-69d30c0a"
+        "UBUNTU14": "ami-69d30c0a"
       },
       "ap-southeast-2": {
-        "AMI": "ami-7a516419"
+        "UBUNTU14": "ami-7a516419"
       },
       "eu-central-1": {
-        "AMI": "ami-b12edade"
+        "UBUNTU14": "ami-b12edade"
       },
       "eu-west-1": {
-        "AMI": "ami-546f0227"
+        "UBUNTU14": "ami-546f0227"
       },
       "sa-east-1": {
-        "AMI": "ami-f3e1769f"
+        "UBUNTU14": "ami-f3e1769f"
       },
       "us-east-1": {
-        "AMI": "ami-4153d956"
+        "UBUNTU14": "ami-4153d956"
       },
       "us-west-1": {
-        "AMI": "ami-87dc9de7"
+        "UBUNTU14": "ami-87dc9de7"
       },
       "us-west-2": {
-        "AMI": "ami-21a26d41"
+        "UBUNTU14": "ami-21a26d41"
       }
     }
   },
@@ -536,11 +520,11 @@
       "Properties": {
         "ImageId": {
           "Fn::FindInMap": [
-            "GenericAMIId",
+            "AWSAMIRegionMap",
             {
               "Ref": "AWS::Region"
             },
-            "HVM64"
+            "CENTOS7"
           ]
         },
         "InstanceType": "t2.micro",
@@ -598,7 +582,7 @@
             {
               "Ref": "AWS::Region"
             },
-            "AMI"
+            "UBUNTU14"
           ]
         },
         "InstanceType": "m4.large",
