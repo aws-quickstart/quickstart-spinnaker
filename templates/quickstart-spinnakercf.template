@@ -622,32 +622,28 @@
               [
                 "#!/bin/bash",
                 "\n",
+                "sudo dpkg --configure -a\n",
                 "export SPINNAKER_HOME=/root/Spinnaker\n",
                 "echo -e \"Host github.com\n\tStrictHostKeyChecking no\n\" >> ~/.ssh/config\n",
-                "apt-get install git -y\n",
+                "apt-get -q install git -y\n",
                 "mkdir -p $SPINNAKER_HOME\n",
                 "cd $SPINNAKER_HOME\n",
-                "git clone https://github.com/spinnaker/spinnaker.git\n",
-                "cd $SPINNAKER_HOME\n",
-                "spinnaker/InstallSpinnaker.sh --quiet --cloud_provider aws --aws_region us-west-2\n",
-                "cd $SPINNAKER_HOME\n",
+                "git clone https://github.com/spinnaker/spinnaker.git --quiet\n",
+                "spinnaker/InstallSpinnaker.sh --quiet --cloud_provider aws --aws_region ",
+                {
+                  "Ref": "AWS::Region"
+                },
+                "\n",
                 "/opt/spinnaker/bin/stop_spinnaker.sh\n",
-                "apt-get update -y\n",
-                "apt-get dist-upgrade -y --force-yes spinnaker\n",
                 "/var/lib/dpkg/info/ca-certificates-java.postinst configure\n",
-                "sed -i 's/name: .*/name: default/g' /opt/spinnaker/config/spinnaker-local.yml\n",
+                "echo -e \"Setting up spinnaker configuration\"\n\n\n",
+                "sed -i 's/name: my-aws-account/name: default/g' /opt/spinnaker/config/spinnaker-local.yml\n",
                 "sed -i 's/defaultIAMRole: .*/defaultIAMRole: ",
                 {
                   "Ref": "BaseIAMRole"
                 },
                 "/g' /opt/spinnaker/config/spinnaker-local.yml\n",
-                "sed -i 's/SPINNAKER_AWS_ENABLED=false/SPINNAKER_AWS_ENABLED=true/g' /etc/default/spinnaker\n",
-                "sed -i 's/SPINNAKER_AWS_DEFAULT_REGION=.*/SPINNAKER_AWS_DEFAULT_REGION=",
-                {
-                  "Ref": "AWS::Region"
-                },
-                "/g' /etc/default/spinnaker\n",
-                "mkdir /home/spinnaker/.aws/\n",
+                "mkdir -p /$HOME/.aws/\n",
                 "printf \"[default]\\n",
                 "aws_access_key_id= ",
                 {
