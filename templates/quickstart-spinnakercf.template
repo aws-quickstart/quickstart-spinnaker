@@ -1,5 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "QS(0024) - Spinnaker QuickStart",
   "Parameters": {
     "KeyName": {
       "Description": "Key Pair Name",
@@ -31,90 +32,99 @@
       "ConstraintDescription": "IP CIDR must be in the range of your VPC"
     },
     "SSHLocation": {
-      "Description": "The IP address range that can be used to SSH to the Bastion host.",
+      "Description": "The IP address range that can be used to SSH to the Bastion host. Note: a value of 0.0.0.0/0 will allow access from ANY ip address",
       "Type": "String",
       "MinLength": "9",
       "MaxLength": "18",
-      "Default": "0.0.0.0/0",
       "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
       "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x."
     }
   },
   "Mappings": {
-    "AWSAMIRegionMap": {
-      "AMI": {
-        "AMZN2016": "amzn-ami-hvm-2016.03.3.x86_64-gp2"
-      },
+    "GenericAMIId": {
       "ap-northeast-1": {
-        "AMZN2016": "ami-374db956"
+        "HVM64": "ami-374db956",
+        "HVMG2": "ami-e0ee1981",
+        "PV64": "ami-3e42b65f"
       },
       "ap-northeast-2": {
-        "AMZN2016": "ami-2b408b45"
+        "HVM64": "ami-2b408b45",
+        "HVMG2": "NOT_SUPPORTED",
+        "PV64": "NOT_SUPPORTED"
       },
       "ap-southeast-1": {
-        "AMZN2016": "ami-a59b49c6"
+        "HVM64": "ami-a59b49c6",
+        "HVMG2": "ami-0cb5676f",
+        "PV64": "ami-df9e4cbc"
       },
       "ap-southeast-2": {
-        "AMZN2016": "ami-dc361ebf"
+        "HVM64": "ami-dc361ebf",
+        "HVMG2": "ami-a71c34c4",
+        "PV64": "ami-63351d00"
       },
       "cn-north-1": {
-        "AMZN2016": "ami-8e6aa0e3"
+        "HVM64": "ami-8e6aa0e3",
+        "HVMG2": "NOT_SUPPORTED",
+        "PV64": "ami-77559f1a"
       },
       "eu-central-1": {
-        "AMZN2016": "ami-ea26ce85"
+        "HVM64": "ami-ea26ce85",
+        "HVMG2": "ami-7f04ec10",
+        "PV64": "ami-6527cf0a"
       },
       "eu-west-1": {
-        "AMZN2016": "ami-f9dd458a"
+        "HVM64": "ami-f9dd458a",
+        "HVMG2": "ami-b9bd25ca",
+        "PV64": "ami-4cdd453f"
       },
       "sa-east-1": {
-        "AMZN2016": "ami-6dd04501"
+        "HVM64": "ami-6dd04501",
+        "HVMG2": "NOT_SUPPORTED",
+        "PV64": "ami-1ad34676"
       },
       "us-east-1": {
-        "AMZN2016": "ami-6869aa05"
+        "HVM64": "ami-6869aa05",
+        "HVMG2": "ami-2e5e9c43",
+        "PV64": "ami-2a69aa47"
       },
       "us-west-1": {
-        "AMZN2016": "ami-31490d51"
+        "HVM64": "ami-31490d51",
+        "HVMG2": "ami-fd76329d",
+        "PV64": "ami-a2490dc2"
       },
       "us-west-2": {
-        "AMZN2016": "ami-7172b611"
+        "HVM64": "ami-7172b611",
+        "HVMG2": "ami-83b770e3",
+        "PV64": "ami-7f77b31f"
       }
     },
-    "UBUNTU14": {
-      "AMI": {
-        "UBUNTU14": "ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-20160714"
-      },
-      "ap-south-1": {
-        "UBUNTU14": "ami-4a90fa25"
-      },
+    "SpinnakerAMIId": {
       "ap-northeast-1": {
-        "UBUNTU14": "ami-a21529cc"
-      },
-      "ap-northeast-2": {
-        "UBUNTU14": "ami-09dc1267"
+        "AMI": "ami-b2ad57d3"
       },
       "ap-southeast-1": {
-        "UBUNTU14": "ami-21d30f42"
+        "AMI": "ami-69d30c0a"
       },
       "ap-southeast-2": {
-        "UBUNTU14": "ami-ba3e14d9"
+        "AMI": "ami-7a516419"
       },
       "eu-central-1": {
-        "UBUNTU14": "ami-26c43149"
+        "AMI": "ami-b12edade"
       },
       "eu-west-1": {
-        "UBUNTU14": "ami-ed82e39e"
+        "AMI": "ami-546f0227"
       },
       "sa-east-1": {
-        "UBUNTU14": "ami-dc48dcb0"
+        "AMI": "ami-f3e1769f"
       },
       "us-east-1": {
-        "UBUNTU14": "ami-2d39803a"
+        "AMI": "ami-4153d956"
       },
       "us-west-1": {
-        "UBUNTU14": "ami-48db9d28"
+        "AMI": "ami-87dc9de7"
       },
       "us-west-2": {
-        "UBUNTU14": "ami-d732f0b7"
+        "AMI": "ami-21a26d41"
       }
     }
   },
@@ -526,11 +536,11 @@
       "Properties": {
         "ImageId": {
           "Fn::FindInMap": [
-            "AWSAMIRegionMap",
+            "GenericAMIId",
             {
               "Ref": "AWS::Region"
             },
-            "AMZN2016"
+            "HVM64"
           ]
         },
         "InstanceType": "t2.micro",
@@ -584,14 +594,14 @@
         },
         "ImageId": {
           "Fn::FindInMap": [
-            "UBUNTU14",
+            "SpinnakerAMIId",
             {
               "Ref": "AWS::Region"
             },
-            "UBUNTU14"
+            "AMI"
           ]
         },
-        "InstanceType": "m4.large",
+        "InstanceType": "m4.4xlarge",
         "KeyName": {
           "Ref": "KeyName"
         },
@@ -622,28 +632,23 @@
               [
                 "#!/bin/bash",
                 "\n",
-                "sudo dpkg --configure -a\n",
-                "export SPINNAKER_HOME=/root/Spinnaker\n",
-                "echo -e \"Host github.com\n\tStrictHostKeyChecking no\n\" >> ~/.ssh/config\n",
-                "apt-get -q install git -y\n",
-                "mkdir -p $SPINNAKER_HOME\n",
-                "cd $SPINNAKER_HOME\n",
-                "git clone https://github.com/spinnaker/spinnaker.git --quiet\n",
-                "spinnaker/InstallSpinnaker.sh --quiet --cloud_provider aws --aws_region ",
-                {
-                  "Ref": "AWS::Region"
-                },
-                "\n",
                 "/opt/spinnaker/bin/stop_spinnaker.sh\n",
+                "apt-get update -y\n",
+                "apt-get dist-upgrade -y --force-yes spinnaker\n",
                 "/var/lib/dpkg/info/ca-certificates-java.postinst configure\n",
-                "echo -e \"Setting up spinnaker configuration\"\n\n\n",
-                "sed -i 's/name: my-aws-account/name: default/g' /opt/spinnaker/config/spinnaker-local.yml\n",
+                "sed -i 's/name: .*/name: default/g' /opt/spinnaker/config/spinnaker-local.yml\n",
                 "sed -i 's/defaultIAMRole: .*/defaultIAMRole: ",
                 {
                   "Ref": "BaseIAMRole"
                 },
                 "/g' /opt/spinnaker/config/spinnaker-local.yml\n",
-                "mkdir -p /$HOME/.aws/\n",
+                "sed -i 's/SPINNAKER_AWS_ENABLED=false/SPINNAKER_AWS_ENABLED=true/g' /etc/default/spinnaker\n",
+                "sed -i 's/SPINNAKER_AWS_DEFAULT_REGION=.*/SPINNAKER_AWS_DEFAULT_REGION=",
+                {
+                  "Ref": "AWS::Region"
+                },
+                "/g' /etc/default/spinnaker\n",
+                "mkdir /home/spinnaker/.aws/\n",
                 "printf \"[default]\\n",
                 "aws_access_key_id= ",
                 {
