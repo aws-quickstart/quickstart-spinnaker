@@ -1,3 +1,7 @@
+This template features the open-source version of Spinnaker
+## Commercial support
+Armory has an installer available and can provide commercial support for spinnaker.  Visit http://go.Armory.io/install for more info
+
 ## Synopsis
 Spinnaker is a Netflix open source, multi-cloud continuous delivery platform for releasing software changes with high velocity and confidence. It provides two core sets of features: cluster management and deployment management. For more information please refer to [Spinnaker main website](http://spinnaker.io/).
 
