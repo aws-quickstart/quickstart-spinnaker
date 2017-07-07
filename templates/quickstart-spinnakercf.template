@@ -99,21 +99,6 @@
       }
     },
     "SpinnakerAMIId": {
-      "ap-northeast-1": {
-        "AMI": "ami-b2ad57d3"
-      },
-      "ap-southeast-1": {
-        "AMI": "ami-69d30c0a"
-      },
-      "ap-southeast-2": {
-        "AMI": "ami-7a516419"
-      },
-      "eu-central-1": {
-        "AMI": "ami-b12edade"
-      },
-      "eu-west-1": {
-        "AMI": "ami-546f0227"
-      },
       "sa-east-1": {
         "AMI": "ami-f3e1769f"
       },
