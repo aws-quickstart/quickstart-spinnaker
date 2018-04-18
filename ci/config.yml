@@ -1,8 +1,7 @@
 global:
-  qsname: quickstart-spinnaker
-  owner: huynhz@amazon.com
   marketplace-ami: false
-  reporting: true
+  owner: huynhz@amazon.com
+  qsname: quickstart-spinnaker
   regions:
     - ap-southeast-1
     - ap-southeast-2
@@ -11,10 +10,13 @@ global:
     - us-east-1
     - us-west-1
     - us-west-2
-
+  reporting: true
 tests:
   spinnaker:
-    template_file: quickstart-spinnakercf.template
     parameter_input: quickstart-spinnakercf.json
+    template_file: quickstart-spinnakercf.template
     regions:
-     - us-west-2
+      - us-west-2
+      - us-east-1
+      - us-west-1
+      - us-west-2
