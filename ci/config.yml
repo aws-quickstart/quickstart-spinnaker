@@ -17,4 +17,5 @@ tests:
     template_file: quickstart-spinnakercf.template
     regions:
       - us-west-2
-
+      - us-east-1
+      - us-west-1
