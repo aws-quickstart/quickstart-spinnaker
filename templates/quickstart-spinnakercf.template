@@ -162,7 +162,6 @@
         },
         "SpinnakerAccessKey": {
             "DependsOn": "SpinnakerUser",
-            "Description": "Generate AccessKey for Spinnaker",
             "Properties": {
                 "UserName": {
                     "Ref": "SpinnakerUser"
@@ -231,7 +230,6 @@
             "Type": "AWS::IAM::Role"
         },
         "SpinnakerUser": {
-            "Description": "User identity Spinnaker uses to create AWS resources",
             "Properties": {
                 "LoginProfile": {
                     "Password": {
@@ -274,8 +272,8 @@
                 "CidrBlock": {
                     "Ref": "SpinnakerVPCCIDR"
                 },
-                "EnableDnsSupport": "true",
-                "EnableDnsHostnames": "true",
+                "EnableDnsSupport": true,
+                "EnableDnsHostnames": true,
                 "Tags": [
                     {
                         "Key": "VPC",
@@ -496,9 +494,9 @@
                         "CidrIp": {
                             "Ref": "SSHLocation"
                         },
-                        "FromPort": "22",
+                        "FromPort": 22,
                         "IpProtocol": "tcp",
-                        "ToPort": "22"
+                        "ToPort": 22
                     }
                 ],
                 "Tags": [
@@ -522,9 +520,9 @@
                         "SourceSecurityGroupId": {
                             "Ref": "SpinnakerBastionSecurityGroup"
                         },
-                        "FromPort": "22",
+                        "FromPort": 22,
                         "IpProtocol": "tcp",
-                        "ToPort": "9000"
+                        "ToPort": 9000
                     }
                 ],
                 "Tags": [
@@ -576,7 +574,7 @@
                 },
                 "NetworkInterfaces": [
                     {
-                        "AssociatePublicIpAddress": "true",
+                        "AssociatePublicIpAddress": true,
                         "DeviceIndex": "0",
                         "GroupSet": [
                             {
@@ -616,7 +614,7 @@
                 },
                 "NetworkInterfaces": [
                     {
-                        "AssociatePublicIpAddress": "true",
+                        "AssociatePublicIpAddress": true,
                         "DeviceIndex": "0",
                         "GroupSet": [
                             {
