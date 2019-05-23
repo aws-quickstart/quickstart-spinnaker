@@ -1,11 +1,11 @@
 This template features the open-source version of Spinnaker
 ## Commercial support
-Armory has an installer available and can provide commercial support for spinnaker.  Visit http://go.Armory.io/install for more info
+Armory has an installer available and can provide commercial support for spinnaker.  Visit https://docs.armory.io/spinnaker/install/ for more info
 
 ## Synopsis
-Spinnaker is a Netflix open source, multi-cloud continuous delivery platform for releasing software changes with high velocity and confidence. It provides two core sets of features: cluster management and deployment management. For more information please refer to [Spinnaker main website](http://spinnaker.io/).
+Spinnaker is a Netflix open source, multi-cloud continuous delivery platform for releasing software changes with high velocity and confidence. It provides two core sets of features: cluster management and deployment management. For more information please refer to [Spinnaker main website](hhttps://www.spinnaker.io/).
 
-If you are interested in using Spinnaker on AWS, you can follow the instructions below to launch Spinnaker using CloudFormation or follow the official [Spinnaker Getting Started](http://spinnaker.io/) guide. 
+If you are interested in using Spinnaker on AWS, you can follow the instructions below to launch Spinnaker using CloudFormation or follow the official [Spinnaker Getting Started](https://www.spinnaker.io/guides/user/get-started/) guide. 
 
 AWS CloudFormation allows developers and systems administrators to create a collection of AWS resources as code in a template that can be provision repeatedly in an orderly and predictable fashion. 
 
@@ -13,19 +13,19 @@ In order to launch Spinnaker on AWS, you would need to create a an instance runn
 
 ![Alt text](images/spinnaker_architecture.png?raw=true "CloudFormation Template")
 
-##Instruction - Using CloudFormation to Launch Spinnaker
+## Instruction - Using CloudFormation to Launch Spinnaker
 
 Instructions to run Spinnaker using this Cloudformation:
 
   
 1. Create an EC2 Key Pair for connecting to your instances.
-  1. Goto Console > EC2 > Key Pairs.
-  2. Click Create Key Pair.
-  3. Name the key pair my-aws-account-keypair
-  4. AWS will download file my-aws-account-keypair.pem to your computer. chmod 400 the file.
+   1. Goto Console > EC2 > Key Pairs.
+   1. Click Create Key Pair.
+   1. Name the key pair my-aws-account-keypair
+   1. AWS will download file my-aws-account-keypair.pem to your computer. `$ chmod 400` the file.
   
-2. Run SSH and port forwarding Spinnaker web application and API to localhost
+1. Run SSH and port forwarding Spinnaker web application and API to localhost
 	- ssh -L 9000:localhost:9000 -L 8084:localhost:8084 -L 8087:localhost:8087 ubuntu@ec2-198-51-100-1.compute-1.amazonaws.com
 
-3. Point your browser to http://localhost:9000 to start using Spinnaker
+1. Point your browser to http://localhost:9000 to start using Spinnaker
     
