@@ -13,7 +13,7 @@ In order to launch Spinnaker on AWS, you would need to create a an instance runn
 
 ![Alt text](images/spinnaker_architecture.png?raw=true "CloudFormation Template")
 
-##Instruction - Using CloudFormation to Launch Spinnaker
+## Instruction - Using CloudFormation to Launch Spinnaker
 
 Instructions to run Spinnaker using this Cloudformation:
 
