@@ -1,7 +1,7 @@
 [
     {
         "ParameterKey": "KeyName",
-        "ParameterValue": "cikey"
+        "ParameterValue": "taskcat-test"
     },
     {
         "ParameterKey": "Password",

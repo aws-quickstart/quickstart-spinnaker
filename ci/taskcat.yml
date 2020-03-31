@@ -14,7 +14,7 @@ global:
 tests:
   spinnaker:
     parameter_input: quickstart-spinnakercf.json
-    template_file: quickstart-spinnakercf.template
+    template_file: quickstart-spinnakercf.template.yaml
     regions:
       - us-west-2
       - us-east-1
