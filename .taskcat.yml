@@ -1,0 +1,28 @@
+project:
+  name: quickstart-spinnaker
+  owner: huynhz@amazon.com
+  package_lambda: false
+  regions:
+  - ap-southeast-1
+  - ap-southeast-2
+  - eu-central-1
+  - eu-west-1
+  - us-east-1
+  - us-west-1
+  - us-west-2
+  s3_bucket: ''
+tests:
+  spinnaker:
+    parameters:
+      KeyName: cikey
+      Password: $[alfred_genpass_16]
+      SSHLocation: 10.100.0.0/16
+      SpinnakerPrivateSubnetCIDR: 10.100.11.0/24
+      SpinnakerPublicSubnetCIDR: 10.100.10.0/24
+      SpinnakerVPCCIDR: 10.100.0.0/16
+    regions:
+    - us-west-2
+    - us-east-1
+    - us-west-1
+    s3_bucket: ''
+    template: templates/quickstart-spinnakercf.template.yaml
