@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: QS(0024) - Spinnaker QuickStart
+Description: (qs-1qup6rals) - Spinnaker QuickStart
 Parameters:
   KeyName:
     Description: Key Pair Name
